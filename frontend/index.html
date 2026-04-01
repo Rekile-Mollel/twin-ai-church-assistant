@@ -56,7 +56,7 @@
 
     #chat-box {
       flex: 1;
-      padding: 24px;
+      padding: 28px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -70,15 +70,14 @@
     }
 
     .message {
-      max-width: 75%;
-      padding: 14px 18px;
-      border-radius: 18px;
-      line-height: 1.6;
-      font-size: 0.98rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    }
+  max-width: 72%;
+  padding: 16px 20px;
+  border-radius: 18px;
+  line-height: 1.7;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 
     .user-row {
       justify-content: flex-end;
@@ -193,7 +192,7 @@
 
     <div class="input-area">
       <div class="input-row">
-        <input type="text" id="message-input" placeholder="Ask Twin AI anything..." />
+        <input type="text" id="message-input" placeholder="Ask Grace anything..." />
         <button id="send-btn">Send</button>
       </div>
     </div>
@@ -203,6 +202,13 @@
   const chatBox = document.getElementById("chat-box");
   const messageInput = document.getElementById("message-input");
   const sendBtn = document.getElementById("send-btn");
+
+function showWelcomeMessage() {
+  addMessage(
+    "Welcome. I’m Grace, here to offer prayer, scripture, and encouragement. How can I support you today?",
+    "ai"
+  );
+}
 
   function addMessage(text, sender) {
     const row = document.createElement("div");
@@ -282,6 +288,7 @@
       sendMessage();
     }
   });
+  showWelcomeMessage();
 </script>
 </body>
 </html>
