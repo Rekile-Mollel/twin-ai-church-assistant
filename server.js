@@ -6,7 +6,11 @@ dotenv.config(); // Load environment variables (like API keys)
 
 const app = express();
 app.use(express.json()); // Allows us to read JSON request bodies
-
+const path = require("path");
+app.use(express.static(path.join(__dirname, "frontend")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
 // Initialize the Gemini client using your API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
