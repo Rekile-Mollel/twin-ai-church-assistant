@@ -70,14 +70,15 @@
     }
 
     .message {
-  max-width: 72%;
-  padding: 16px 20px;
-  border-radius: 18px;
-  line-height: 1.7;
-  font-size: 1rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
+      max-width: 72%;
+      padding: 16px 20px;
+      border-radius: 18px;
+      line-height: 1.7;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
 
     .user-row {
       justify-content: flex-end;
@@ -98,6 +99,33 @@
       color: #f8fafc;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-bottom-left-radius: 6px;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 0 24px 18px;
+    }
+
+    .action-btn {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
     }
 
     .input-area {
@@ -152,24 +180,17 @@
       transform: scale(0.98);
     }
 
-   #send-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+    #send-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
+
     @media (max-width: 768px) {
       .app {
         height: 95vh;
         border-radius: 18px;
       }
-     .quick-actions {
-  padding: 0 18px 14px;
-  gap: 10px;
-}
 
-.action-btn {
-  font-size: 0.85rem;
-  padding: 9px 12px;
-}
       .message {
         max-width: 88%;
         font-size: 0.95rem;
@@ -183,36 +204,19 @@
         font-size: 0.85rem;
       }
 
+      .quick-actions {
+        padding: 0 18px 14px;
+        gap: 10px;
+      }
+
+      .action-btn {
+        font-size: 0.85rem;
+        padding: 9px 12px;
+      }
+
       #send-btn {
         padding: 10px 14px;
       }
-      
- .quick-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 0 24px 18px;
-}
-
-.action-btn {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
-}
-
-.action-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.action-btn:active {
-  transform: scale(0.98);
-}
     }
   </style>
 </head>
@@ -220,122 +224,128 @@
   <div class="app">
     <div class="top-bar">
       <h1>Grace AI Assistant</h1>
-<p>A gentle church companion for prayer, scripture, and encouragement.</p>
+      <p>A gentle church companion for prayer, scripture, and encouragement.</p>
     </div>
-<div id="chat-box"></div>
 
-<div class="quick-actions">
-  <button class="action-btn" data-message="Please pray for me.">🙏 Pray for me</button>
-  <button class="action-btn" data-message="Please give me a Bible verse for strength and hope.">📖 Give me a Bible verse</button>
-  <button class="action-btn" data-message="Please encourage me with a short faith-filled message.">✨ Encourage me</button>
-</div>
+    <div id="chat-box"></div>
 
-<div class="input-area">
-  <div class="input-row">
-    <input type="text" id="message-input" placeholder="Ask for prayer, scripture, or encouragement..." />
-    <button id="send-btn">Send</button>
-  </div>
-</div>
+    <div class="quick-actions">
+      <button class="action-btn" data-message="Please pray for me.">🙏 Pray for me</button>
+      <button class="action-btn" data-message="Please give me a Bible verse for strength and hope.">📖 Give me a Bible verse</button>
+      <button class="action-btn" data-message="Please encourage me with a short faith-filled message.">✨ Encourage me</button>
+    </div>
 
+    <div class="input-area">
+      <div class="input-row">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Ask for prayer, scripture, or encouragement..."
+        />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
   </div>
 
   <script>
-  const chatBox = document.getElementById("chat-box");
-  const messageInput = document.getElementById("message-input");
-  const sendBtn = document.getElementById("send-btn");
-  const actionButtons = document.querySelectorAll(".action-btn");
+    const chatBox = document.getElementById("chat-box");
+    const messageInput = document.getElementById("message-input");
+    const sendBtn = document.getElementById("send-btn");
+    const actionButtons = document.querySelectorAll(".action-btn");
 
-actionButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const presetMessage = button.getAttribute("data-message");
-    sendMessage(presetMessage);
-  });
-});
+    function addMessage(text, sender) {
+      const row = document.createElement("div");
+      row.classList.add("message-row", sender === "user" ? "user-row" : "ai-row");
 
-function showWelcomeMessage() {
-  addMessage(
-    "Welcome. I’m Grace, here to offer prayer, scripture, and encouragement. How can I support you today?",
-    "ai"
-  );
-}
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", sender);
+      messageDiv.textContent = text;
 
-  function addMessage(text, sender) {
-    const row = document.createElement("div");
-    row.classList.add("message-row", sender === "user" ? "user-row" : "ai-row");
+      row.appendChild(messageDiv);
+      chatBox.appendChild(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message", sender);
-    messageDiv.textContent = text;
+    function addTypingIndicator() {
+      const row = document.createElement("div");
+      row.classList.add("message-row", "ai-row");
+      row.id = "typing-row";
 
-    row.appendChild(messageDiv);
-    chatBox.appendChild(row);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", "ai");
+      messageDiv.textContent = "Grace is typing...";
 
-  function addTypingIndicator() {
-    const row = document.createElement("div");
-    row.classList.add("message-row", "ai-row");
-    row.id = "typing-row";
+      row.appendChild(messageDiv);
+      chatBox.appendChild(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message", "ai");
-    messageDiv.id = "typing-indicator";
-    messageDiv.textContent = "Twin AI is typing...";
+    function removeTypingIndicator() {
+      const typingRow = document.getElementById("typing-row");
+      if (typingRow) typingRow.remove();
+    }
 
-    row.appendChild(messageDiv);
-    chatBox.appendChild(row);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+    function showWelcomeMessage() {
+      addMessage(
+        "Welcome. I’m Grace, here to offer prayer, scripture, and encouragement. How can I support you today?",
+        "ai"
+      );
+    }
 
-  function removeTypingIndicator() {
-    const typingRow = document.getElementById("typing-row");
-    if (typingRow) typingRow.remove();
-  }
-  async function sendMessage(customMessage = null) {
-  const message = customMessage || messageInput.value.trim();
+    async function sendMessage(customMessage = null) {
+      const message = customMessage || messageInput.value.trim();
 
-  if (!message) return;
+      if (!message) return;
 
-  addMessage(message, "user");
+      addMessage(message, "user");
+      messageInput.value = "";
+      sendBtn.disabled = true;
+      addTypingIndicator();
 
-  if (!customMessage) {
-    messageInput.value = "";
-  } else {
-    messageInput.value = "";
-  }
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
 
-  sendBtn.disabled = true;
-  addTypingIndicator();
+        const data = await response.json();
 
-  try {
-    const response = await fetch("/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message })
+        removeTypingIndicator();
+
+        if (data.reply) {
+          addMessage(data.reply, "ai");
+        } else {
+          addMessage("Something went wrong.", "ai");
+        }
+      } catch (error) {
+        console.error(error);
+        removeTypingIndicator();
+        addMessage("Could not connect to Grace right now.", "ai");
+      } finally {
+        sendBtn.disabled = false;
+        messageInput.focus();
+      }
+    }
+
+    sendBtn.addEventListener("click", () => sendMessage());
+
+    messageInput.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
     });
 
-    const data = await response.json();
+    actionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const presetMessage = button.getAttribute("data-message");
+        sendMessage(presetMessage);
+      });
+    });
 
-    removeTypingIndicator();
-
-    if (data.reply) {
-      addMessage(data.reply, "ai");
-    } else {
-      addMessage("Something went wrong.", "ai");
-    }
-  } catch (error) {
-    console.error(error);
-    removeTypingIndicator();
-    addMessage("Could not connect to Grace right now.", "ai");
-  } finally {
-    sendBtn.disabled = false;
-    messageInput.focus();
-  }
-}
- 
-  
-</script>
+    showWelcomeMessage();
+  </script>
 </body>
 </html>
