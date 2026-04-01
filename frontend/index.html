@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grace AI Assistant</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: white;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .top-bar {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .top-bar h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .top-bar p {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 14px 18px;
+      border-radius: 18px;
+      line-height: 1.6;
+      font-size: 0.98rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .user-row {
+      justify-content: flex-end;
+    }
+
+    .user {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      border-bottom-right-radius: 6px;
+    }
+
+    .ai-row {
+      justify-content: flex-start;
+    }
+
+    .ai {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom-left-radius: 6px;
+    }
+
+    .input-area {
+      padding: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 10px;
+    }
+
+    #message-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 1rem;
+      padding: 10px 12px;
+    }
+
+    #message-input::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    #send-btn {
+      border: none;
+      outline: none;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    #send-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    #send-btn:active {
+      transform: scale(0.98);
+    }
+
+   #send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+    }
+    @media (max-width: 768px) {
+      .app {
+        height: 95vh;
+        border-radius: 18px;
+      }
+
+      .message {
+        max-width: 88%;
+        font-size: 0.95rem;
+      }
+
+      .top-bar h1 {
+        font-size: 1.15rem;
+      }
+
+      .top-bar p {
+        font-size: 0.85rem;
+      }
+
+      #send-btn {
+        padding: 10px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top-bar">
+      <h1>Grace AI Assistant</h1>
+<p>A gentle church companion for prayer, scripture, and encouragement.</p>
+    </div>
+
+    <div id="chat-box"></div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <input type="text" id="message-input" placeholder="Ask Twin AI anything..." />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const chatBox = document.getElementById("chat-box");
+  const messageInput = document.getElementById("message-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  function addMessage(text, sender) {
+    const row = document.createElement("div");
+    row.classList.add("message-row", sender === "user" ? "user-row" : "ai-row");
+
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender);
+    messageDiv.textContent = text;
+
+    row.appendChild(messageDiv);
+    chatBox.appendChild(row);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addTypingIndicator() {
+    const row = document.createElement("div");
+    row.classList.add("message-row", "ai-row");
+    row.id = "typing-row";
+
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", "ai");
+    messageDiv.id = "typing-indicator";
+    messageDiv.textContent = "Twin AI is typing...";
+
+    row.appendChild(messageDiv);
+    chatBox.appendChild(row);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const typingRow = document.getElementById("typing-row");
+    if (typingRow) typingRow.remove();
+  }
+
+  async function sendMessage() {
+    const message = messageInput.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    messageInput.value = "";
+    sendBtn.disabled = true;
+    addTypingIndicator();
+
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      removeTypingIndicator();
+
+      if (data.reply) {
+        addMessage(data.reply, "ai");
+      } else {
+        addMessage("Something went wrong twin.", "ai");
+      }
+    } catch (error) {
+      console.error(error);
+      removeTypingIndicator();
+      addMessage("Could not connect to backend.", "ai");
+    } finally {
+      sendBtn.disabled = false;
+      messageInput.focus();
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  messageInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+  });
+</script>
+</body>
+</html>
