@@ -2,6 +2,12 @@
 
 Grace AI Assistant is a faith-based AI web application designed to offer prayer, scripture, and encouragement through a calm and supportive church-centered experience.
 
+## Preview
+
+![Home](screenshots/home.png)
+
+![Chat](screenshots/chat.png)
+
 ## Features
 
 - Prayer support
